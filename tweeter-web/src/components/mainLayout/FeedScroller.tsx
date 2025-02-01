@@ -3,9 +3,9 @@ import { UserInfoContext } from "../userInfo/UserInfoProvider";
 import { AuthToken, FakeData, Status, User } from "tweeter-shared";
 import { useState, useEffect } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
-import { Link } from "react-router-dom";
 import Post from "../statusItem/Post";
 import useToastListener from "../toaster/ToastListenerHook";
+import StatusItem from "../statusItem/StatusItem";
 
 export const PAGE_SIZE = 10;
 
@@ -17,9 +17,8 @@ const FeedScroller = () => {
   const [lastItem, setLastItem] = useState<Status | null>(null);
   const [changedDisplayedUser, setChangedDisplayedUser] = useState(true);
 
-  const addItems = (newItems: Status[]) =>
-    setNewItems(newItems);
-  
+  const addItems = (newItems: Status[]) => setNewItems(newItems);
+
   const { displayedUser, setDisplayedUser, currentUser, authToken } =
     useContext(UserInfoContext);
 
@@ -30,17 +29,17 @@ const FeedScroller = () => {
 
   // Load initial items whenever the displayed user changes. Done in a separate useEffect hook so the changes from reset will be visible.
   useEffect(() => {
-    if(changedDisplayedUser) {
+    if (changedDisplayedUser) {
       loadMoreItems();
     }
   }, [changedDisplayedUser]);
 
   // Add new items whenever there are new items to add
   useEffect(() => {
-    if(newItems) {
+    if (newItems) {
       setItems([...items, ...newItems]);
     }
-  }, [newItems])
+  }, [newItems]);
 
   const reset = async () => {
     setItems([]);
@@ -48,7 +47,7 @@ const FeedScroller = () => {
     setLastItem(null);
     setHasMoreItems(true);
     setChangedDisplayedUser(true);
-  }
+  };
 
   const loadMoreItems = async () => {
     try {
@@ -62,7 +61,7 @@ const FeedScroller = () => {
       setHasMoreItems(hasMore);
       setLastItem(newItems[newItems.length - 1]);
       addItems(newItems);
-      setChangedDisplayedUser(false)
+      setChangedDisplayedUser(false);
     } catch (error) {
       displayErrorMessage(
         `Failed to load feed items because of exception: ${error}`
@@ -139,20 +138,7 @@ const FeedScroller = () => {
                     />
                   </div>
                   <div className="col">
-                    <h2>
-                      <b>
-                        {item.user.firstName} {item.user.lastName}
-                      </b>{" "}
-                      -{" "}
-                      <Link
-                        to={item.user.alias}
-                        onClick={(event) => navigateToUser(event)}
-                      >
-                        {item.user.alias}
-                      </Link>
-                    </h2>
-                    {item.formattedDate}
-                    <br />
+                    <StatusItem item={item} />
                     <Post status={item} />
                   </div>
                 </div>

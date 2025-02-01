@@ -8,6 +8,7 @@ import AuthenticationFormLayout from "../AuthenticationFormLayout";
 import { AuthToken, FakeData, User } from "tweeter-shared";
 import { Buffer } from "buffer";
 import useToastListener from "../../toaster/ToastListenerHook";
+import AuthenticationFields from "../AuthenticationFields";
 
 const Register = () => {
   const [firstName, setFirstName] = useState("");
@@ -155,7 +156,7 @@ const Register = () => {
           />
           <label htmlFor="lastNameInput">Last Name</label>
         </div>
-        <div className="form-floating">
+        {/* <div className="form-floating">
           <input
             type="text"
             className="form-control"
@@ -177,7 +178,16 @@ const Register = () => {
             onChange={(event) => setPassword(event.target.value)}
           />
           <label htmlFor="passwordInput">Password</label>
-        </div>
+        </div> */}
+
+        <AuthenticationFields
+          alias={alias}
+          setAlias={setAlias}
+          password={password}
+          setPassword={setPassword}
+          onKeyDown={registerOnEnter}
+        />
+
         <div className="form-floating mb-3">
           <input
             type="file"
