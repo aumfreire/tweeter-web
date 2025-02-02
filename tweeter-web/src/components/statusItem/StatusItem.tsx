@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import useToastListener from "../toaster/ToastListenerHook";
 import { AuthToken, FakeData, Status, User } from "tweeter-shared";
-import userInfoHook from "../userInfo/UserInfoHook";
+import useUserInfoHook from "../userInfo/UserInfoHook";
 
 interface Props {
   item: Status;
@@ -10,7 +10,7 @@ interface Props {
 const Story = (props: Props) => {
   const { displayErrorMessage } = useToastListener();
 
-  const { setDisplayedUser, currentUser, authToken } = userInfoHook();
+  const { setDisplayedUser, currentUser, authToken } = useUserInfoHook();
 
   const getUser = async (
     authToken: AuthToken,

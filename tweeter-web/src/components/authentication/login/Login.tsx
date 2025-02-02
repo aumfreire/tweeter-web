@@ -6,7 +6,7 @@ import AuthenticationFormLayout from "../AuthenticationFormLayout";
 import { AuthToken, FakeData, User } from "tweeter-shared";
 import useToastListener from "../../toaster/ToastListenerHook";
 import AuthenticationFields from "../AuthenticationFields";
-import userInfoHook from "../../userInfo/UserInfoHook";
+import useUserInfoHook from "../../userInfo/UserInfoHook";
 
 interface Props {
   originalUrl?: string;
@@ -19,7 +19,7 @@ const Login = (props: Props) => {
   const [isLoading, setIsLoading] = useState(false);
 
   const navigate = useNavigate();
-  const { updateUserInfo } = userInfoHook();
+  const { updateUserInfo } = useUserInfoHook();
   const { displayErrorMessage } = useToastListener();
 
   const checkSubmitButtonStatus = (): boolean => {
