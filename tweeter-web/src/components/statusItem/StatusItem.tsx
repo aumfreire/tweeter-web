@@ -1,7 +1,5 @@
 import { Link } from "react-router-dom";
-import useToastListener from "../toaster/ToastListenerHook";
-import { AuthToken, FakeData, Status, User } from "tweeter-shared";
-import useUserInfoHook from "../userInfo/UserInfoHook";
+import { Status } from "tweeter-shared";
 import userNavigationHook from "../userInfo/UserNavigationHook";
 
 interface Props {
