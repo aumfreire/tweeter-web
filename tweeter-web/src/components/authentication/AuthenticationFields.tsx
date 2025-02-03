@@ -1,4 +1,4 @@
-interface AuthenticationFieldsProps {
+interface Props {
   alias: string;
   setAlias: (value: string) => void;
   password: string;
@@ -6,13 +6,7 @@ interface AuthenticationFieldsProps {
   onKeyDown: (event: React.KeyboardEvent<HTMLElement>) => void;
 }
 
-const AuthenticationFields: React.FC<AuthenticationFieldsProps> = ({
-  alias,
-  setAlias,
-  password,
-  setPassword,
-  onKeyDown,
-}) => {
+const AuthenticationFields = (props: Props) => {
   return (
     <>
       <div className="form-floating">
@@ -22,9 +16,9 @@ const AuthenticationFields: React.FC<AuthenticationFieldsProps> = ({
           size={50}
           id="aliasInput"
           placeholder="name@example.com"
-          value={alias}
-          onKeyDown={onKeyDown}
-          onChange={(event) => setAlias(event.target.value)}
+          value={props.alias}
+          onKeyDown={props.onKeyDown}
+          onChange={(event) => props.setAlias(event.target.value)}
         />
         <label htmlFor="aliasInput">Alias</label>
       </div>
@@ -34,9 +28,9 @@ const AuthenticationFields: React.FC<AuthenticationFieldsProps> = ({
           className="form-control bottom"
           id="passwordInput"
           placeholder="Password"
-          value={password}
-          onKeyDown={onKeyDown}
-          onChange={(event) => setPassword(event.target.value)}
+          value={props.password}
+          onKeyDown={props.onKeyDown}
+          onChange={(event) => props.setPassword(event.target.value)}
         />
         <label htmlFor="passwordInput">Password</label>
       </div>
