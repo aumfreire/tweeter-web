@@ -1,15 +1,24 @@
-import { useContext } from "react";
-import { UserInfoContext } from "../userInfo/UserInfoProvider";
 import { AuthToken, FakeData, Status, User } from "tweeter-shared";
 import { useState, useEffect } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
-import { Link } from "react-router-dom";
 import Post from "../statusItem/Post";
 import useToastListener from "../toaster/ToastListenerHook";
+import StatusItem from "../statusItem/StatusItem";
+import useUserInfoHook from "../userInfo/UserInfoHook";
 
 export const PAGE_SIZE = 10;
 
-const StoryScroller = () => {
+interface Props {
+  itemDescription: string;
+  loadMore: (
+    authToken: AuthToken,
+    userAlias: string,
+    pageSize: number,
+    lastItem: Status | null
+  ) => Promise<[Status[], boolean]>;
+}
+
+const StatusItemScroller = (props: Props) => {
   const { displayErrorMessage } = useToastListener();
   const [items, setItems] = useState<Status[]>([]);
   const [newItems, setNewItems] = useState<Status[]>([]);
@@ -17,11 +26,10 @@ const StoryScroller = () => {
   const [lastItem, setLastItem] = useState<Status | null>(null);
   const [changedDisplayedUser, setChangedDisplayedUser] = useState(true);
 
-  const addItems = (newItems: Status[]) =>
-    setNewItems(newItems);
+  const addItems = (newItems: Status[]) => setNewItems(newItems);
 
   const { displayedUser, setDisplayedUser, currentUser, authToken } =
-    useContext(UserInfoContext);
+    useUserInfoHook();
 
   // Initialize the component whenever the displayed user changes
   useEffect(() => {
@@ -30,17 +38,17 @@ const StoryScroller = () => {
 
   // Load initial items whenever the displayed user changes. Done in a separate useEffect hook so the changes from reset will be visible.
   useEffect(() => {
-    if(changedDisplayedUser) {
+    if (changedDisplayedUser) {
       loadMoreItems();
     }
   }, [changedDisplayedUser]);
 
   // Add new items whenever there are new items to add
   useEffect(() => {
-    if(newItems) {
+    if (newItems) {
       setItems([...items, ...newItems]);
     }
-  }, [newItems])
+  }, [newItems]);
 
   const reset = async () => {
     setItems([]);
@@ -48,11 +56,11 @@ const StoryScroller = () => {
     setLastItem(null);
     setHasMoreItems(true);
     setChangedDisplayedUser(true);
-  }
+  };
 
   const loadMoreItems = async () => {
     try {
-      const [newItems, hasMore] = await loadMoreStoryItems(
+      const [newItems, hasMore] = await props.loadMore(
         authToken!,
         displayedUser!.alias,
         PAGE_SIZE,
@@ -62,54 +70,12 @@ const StoryScroller = () => {
       setHasMoreItems(hasMore);
       setLastItem(newItems[newItems.length - 1]);
       addItems(newItems);
-      setChangedDisplayedUser(false)
+      setChangedDisplayedUser(false);
     } catch (error) {
       displayErrorMessage(
-        `Failed to load story items because of exception: ${error}`
+        `Failed to load ${props.itemDescription} items because of exception: ${error}`
       );
     }
-  };
-
-  const loadMoreStoryItems = async (
-    authToken: AuthToken,
-    userAlias: string,
-    pageSize: number,
-    lastItem: Status | null
-  ): Promise<[Status[], boolean]> => {
-    // TODO: Replace with the result of calling server
-    return FakeData.instance.getPageOfStatuses(lastItem, pageSize);
-  };
-  const navigateToUser = async (event: React.MouseEvent): Promise<void> => {
-    event.preventDefault();
-
-    try {
-      const alias = extractAlias(event.target.toString());
-
-      const user = await getUser(authToken!, alias);
-
-      if (!!user) {
-        if (currentUser!.equals(user)) {
-          setDisplayedUser(currentUser!);
-        } else {
-          setDisplayedUser(user);
-        }
-      }
-    } catch (error) {
-      displayErrorMessage(`Failed to get user because of exception: ${error}`);
-    }
-  };
-
-  const extractAlias = (value: string): string => {
-    const index = value.indexOf("@");
-    return value.substring(index);
-  };
-
-  const getUser = async (
-    authToken: AuthToken,
-    alias: string
-  ): Promise<User | null> => {
-    // TODO: Replace with the result of calling server
-    return FakeData.instance.findUserByAlias(alias);
   };
 
   return (
@@ -138,20 +104,7 @@ const StoryScroller = () => {
                     />
                   </div>
                   <div className="col">
-                    <h2>
-                      <b>
-                        {item.user.firstName} {item.user.lastName}
-                      </b>{" "}
-                      -{" "}
-                      <Link
-                        to={item.user.alias}
-                        onClick={(event) => navigateToUser(event)}
-                      >
-                        {item.user.alias}
-                      </Link>
-                    </h2>
-                    {item.formattedDate}
-                    <br />
+                    <StatusItem item={item} />
                     <Post status={item} />
                   </div>
                 </div>
@@ -164,4 +117,4 @@ const StoryScroller = () => {
   );
 };
 
-export default StoryScroller;
+export default StatusItemScroller;
